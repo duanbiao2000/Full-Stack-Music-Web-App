@@ -34,6 +34,7 @@ export const MyUserContextProvider = (props: Props) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
 
+  // 从supabase数据库中获取用户详细信息
   const getUserDetails = () => supabase.from('users').select('*').single();
   const getSubscription = () =>
     supabase

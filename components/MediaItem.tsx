@@ -1,8 +1,8 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import useLoadImage from '@/hooks/useLoadImage';
-import usePlayer from '@/hooks/usePlayer';
-import { Song } from '@/types';
+import useLoadImage from "@/hooks/useLoadImage";
+import usePlayer from "@/hooks/usePlayer";
+import { Song } from "@/types";
 
 interface MediaItemProps {
   data: Song;
@@ -10,6 +10,7 @@ interface MediaItemProps {
 }
 
 const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
+  // 使用usePlayer钩子函数获取player对象
   const player = usePlayer();
   const imageUrl = useLoadImage(data);
   const handleClick = () => {
@@ -26,7 +27,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
     >
       <div className="relative rounded-md min-h-[48px] min-w-[48px] overflow-hidden">
         <Image
-          src={imageUrl || '/images/liked.png'}
+          src={imageUrl || "/images/liked.png"}
           fill
           alt="Image"
           className=" object-cover"

@@ -1,7 +1,7 @@
 /**
-* USERS
-* Note: This table contains user data. Users should only be able to view and update their own data.
-*/
+ * USERS
+ * Note: This table contains user data. Users should only be able to view and update their own data.
+ */
 create table users (
   -- UUID from auth.users
   id uuid references auth.users not null primary key,
@@ -12,36 +12,41 @@ create table users (
   -- Stores your customer's payment instruments.
   payment_method jsonb
 );
-alter table users
-  enable row level security;
-create policy "Can view own user data." on users
-  for select using (auth.uid() = id);
-create policy "Can update own user data." on users
-  for update using (auth.uid() = id);
-
+-- 启用行级安全
+alter table users enable row level security;
+-- 创建一个策略，允许用户查看自己的用户数据
+create policy "Can view own user data." on users for
+select using (auth.uid() = id);
+-- 创建一个策略，允许用户更新自己的用户数据
+create policy "Can update own user data." on users for
+update using (auth.uid() = id);
 /**
-* This trigger automatically creates a user entry when a new user signs up via Supabase Auth.
-*/
-create function public.handle_new_user()
-returns trigger as
-$$
-  begin
-    insert into public.users (id, full_name, avatar_url)
-    values (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
-    return new;
-  end;
-$$
+ * This trigger automatically creates a user entry when a new user signs up via Supabase Auth.
+ */
+-- 创建一个名为public.handle_new_user的函数，该函数返回一个触发器
+create function public.handle_new_user() returns trigger as $$ -- 开始函数体
+begin -- 向public.users表中插入一条新记录，id为new.id，full_name为new.raw_user_meta_data中的full_name，avatar_url为new.raw_user_meta_data中的avatar_url
+insert into public.users (id, full_name, avatar_url)
+values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'avatar_url'
+  );
+-- 返回new
+return new;
+end;
+$$ -- 定义存储过程的语言为plpgsql，并设置安全级别为definer
 language plpgsql security definer;
-
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row
-    execute procedure public.handle_new_user();
-
+-- 创建一个触发器，名为on_auth_user_created
+create trigger on_auth_user_created -- 在auth.users表插入数据后触发
+after
+insert on auth.users -- 对每一行数据执行
+  for each row -- 执行public.handle_new_user()函数
+  execute procedure public.handle_new_user();
 /**
-* CUSTOMERS
-* Note: this is a private table that contains a mapping of user IDs to Strip customer IDs.
-*/
+ * CUSTOMERS
+ * Note: this is a private table that contains a mapping of user IDs to Strip customer IDs.
+ */
 create table customers (
   -- UUID from auth.users
   id uuid references auth.users not null primary key,
@@ -50,11 +55,10 @@ create table customers (
 );
 alter table customers enable row level security;
 -- No policies as this is a private table that the user must not have access to.
-
 /**
-* PRODUCTS
-* Note: products are created and managed in Stripe and synced to our DB via Stripe webhooks.
-*/
+ * PRODUCTS
+ * Note: products are created and managed in Stripe and synced to our DB via Stripe webhooks.
+ */
 create table products (
   -- Product ID from Stripe, e.g. prod_1234.
   id text primary key,
@@ -69,15 +73,13 @@ create table products (
   -- Set of key-value pairs, used to store additional information about the object in a structured format.
   metadata jsonb
 );
-alter table products
-  enable row level security;
-create policy "Allow public read-only access." on products
-  for select using (true);
-
+alter table products enable row level security;
+create policy "Allow public read-only access." on products for
+select using (true);
 /**
-* PRICES
-* Note: prices are created and managed in Stripe and synced to our DB via Stripe webhooks.
-*/
+ * PRICES
+ * Note: prices are created and managed in Stripe and synced to our DB via Stripe webhooks.
+ */
 create type pricing_type as enum ('one_time', 'recurring');
 create type pricing_plan_interval as enum ('day', 'week', 'month', 'year');
 create table prices (
@@ -104,16 +106,22 @@ create table prices (
   -- Set of key-value pairs, used to store additional information about the object in a structured format.
   metadata jsonb
 );
-alter table prices
-  enable row level security;
-create policy "Allow public read-only access." on prices
-  for select using (true);
-
+alter table prices enable row level security;
+create policy "Allow public read-only access." on prices for
+select using (true);
 /**
-* SUBSCRIPTIONS
-* Note: subscriptions are created and managed in Stripe and synced to our DB via Stripe webhooks.
-*/
-create type subscription_status as enum ('trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired', 'past_due', 'unpaid');
+ * SUBSCRIPTIONS
+ * Note: subscriptions are created and managed in Stripe and synced to our DB via Stripe webhooks.
+ */
+create type subscription_status as enum (
+  'trialing',
+  'active',
+  'canceled',
+  'incomplete',
+  'incomplete_expired',
+  'past_due',
+  'unpaid'
+);
 create table subscriptions (
   -- Subscription ID from Stripe, e.g. sub_1234.
   id text primary key,
@@ -145,15 +153,13 @@ create table subscriptions (
   -- If the subscription has a trial, the end of that trial.
   trial_end timestamp with time zone default timezone('utc'::text, now())
 );
-alter table subscriptions
-  enable row level security;
-create policy "Can only view own subs data." on subscriptions
-  for select using (auth.uid() = user_id);
-
+alter table subscriptions enable row level security;
+create policy "Can only view own subs data." on subscriptions for
+select using (auth.uid() = user_id);
 /**
  * REALTIME SUBSCRIPTIONS
  * Only allow realtime listening on public tables.
  */
 drop publication if exists supabase_realtime;
-create publication supabase_realtime
-  for table products, prices;
+create publication supabase_realtime for table products,
+prices;
