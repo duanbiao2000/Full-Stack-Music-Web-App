@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { TbPlaylist } from 'react-icons/tb';
-import { AiOutlinePlus } from 'react-icons/ai';
+import { TbPlaylist } from "react-icons/tb";
+import { AiOutlinePlus } from "react-icons/ai";
 
-import useAuthModal from '@/hooks/useAuthModal';
-import { useUser } from '@/hooks/useUser';
-import useUploadModal from '@/hooks/useUploadModal';
-import { Song } from '@/types';
-import MediaItem from './MediaItem';
-import useOnPlay from '@/hooks/useOnPlay';
+import useAuthModal from "@/hooks/useAuthModal";
+import { useUser } from "@/hooks/useUser";
+import useUploadModal from "@/hooks/useUploadModal";
+import { Song } from "@/types";
+// 导入MediaItem组件
+import MediaItem from "./MediaItem";
+import useOnPlay from "@/hooks/useOnPlay";
 
-import useSubscribeModal from '@/hooks/useSubscribeModal';
+import useSubscribeModal from "@/hooks/useSubscribeModal";
 
 interface LibraryProps {
   songs: Song[];

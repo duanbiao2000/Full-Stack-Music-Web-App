@@ -1,7 +1,7 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { FaPlay } from 'react-icons/fa';
+"use client";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { FaPlay } from "react-icons/fa";
 
 interface ListItemProps {
   image: string;
@@ -13,6 +13,7 @@ const ListItem: React.FC<ListItemProps> = ({ image, name, href }) => {
   const router = useRouter();
   const onClick = () => {
     //
+    // 使用router.push方法跳转到指定链接
     router.push(href);
   };
   return (

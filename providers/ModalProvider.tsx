@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import AuthModal from '@/components/AuthModal';
 import SubscribeModal from '@/components/SubscribeModal';

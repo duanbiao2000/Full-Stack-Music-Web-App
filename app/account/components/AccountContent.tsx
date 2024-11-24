@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-hot-toast';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
-import Button from '@/components/Button';
-import useSubscribeModal from '@/hooks/useSubscribeModal';
-import { useUser } from '@/hooks/useUser';
-import { postData } from '@/libs/helper';
+import Button from "@/components/Button";
+import useSubscribeModal from "@/hooks/useSubscribeModal";
+import { useUser } from "@/hooks/useUser";
+import { postData } from "@/libs/helper";
 
+// 账户内容组件
 const AccountContent = () => {
   const router = useRouter();
   const subscribeModal = useSubscribeModal();
@@ -17,7 +18,7 @@ const AccountContent = () => {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace('/');
+      router.replace("/");
     }
   }, [isLoading, user, router]);
 
@@ -25,7 +26,7 @@ const AccountContent = () => {
     setLoading(true);
     try {
       const { url, error } = await postData({
-        url: '/api/create-portal-link',
+        url: "/api/create-portal-link",
       });
       window.location.assign(url);
     } catch (error) {
